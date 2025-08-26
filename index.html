@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APIverse</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <style>
+    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9fafb; color:#111; }
+    header { background:#111; color:#fff; padding:1rem; text-align:center; }
+    h1 { margin:0; font-size:2rem; }
+    #grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(250px, 1fr)); gap:1rem; padding:1rem; }
+    .card { background:#fff; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.1); padding:1rem; }
+    .card h2 { font-size:1.2rem; margin:0 0 .5rem; }
+    footer { margin-top:2rem; background:#111; color:#fff; padding:1rem; text-align:center; font-size:.9rem; }
+    select { margin:1rem; padding:.5rem; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌌 APIverse</h1>
+    <p>The universe of AI APIs, updated daily</p>
+    <label for="categoryFilter">Filter by category: </label>
+    <select id="categoryFilter">
+      <option value="all">All</option>
+    </select>
+  </header>
+
+  <main id="grid"></main>
+
+  <footer>
+    <div id="stats"></div>
+    <p>© 2025 APIverse</p>
+  </footer>
+
+  <script>
+    async function loadData() {
+      const res = await fetch('ai_tools.json?cache=' + Date.now());
+      const data = await res.json();
+      const grid = document.getElementById('grid');
+      const filter = document.getElementById('categoryFilter');
+
+      const categories = [...new Set(data.ai_tools.map(t => t.category))];
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat; opt.innerText = cat;
+        filter.appendChild(opt);
+      });
+
+      function render(cat) {
+        grid.innerHTML = '';
+        data.ai_tools.filter(t => cat==='all'||t.category===cat).forEach(tool => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `<h2>${tool.name}</h2>
+            <p><b>Category:</b> ${tool.category}</p>
+            <p><b>Features:</b> ${tool.features.join(', ')}</p>
+            <p><a href="${tool.url}" target="_blank">Visit</a></p>`;
+          grid.appendChild(card);
+        });
+      }
+      filter.onchange = () => render(filter.value);
+      render('all');
+
+      // Footer stats
+      document.getElementById('stats').innerText =
+        `Last updated: ${new Date().toLocaleString()} | Total: ${data.ai_tools.length}`;
+    }
+    loadData();
+  </script>
+</body>
+</html>
