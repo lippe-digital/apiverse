@@ -1,0 +1,14 @@
+{
+  "last_updated": "2025-08-27T00:00:00Z",
+  "count": 1,
+  "tools": [
+    {
+      "name": "OpenAI",
+      "category": "LLM",
+      "api_available": true,
+      "url": "https://platform.openai.com",
+      "free_tier": true,
+      "features": ["ChatGPT", "DALL·E", "Whisper"]
+    }
+  ]
+}
