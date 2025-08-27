@@ -2,34 +2,36 @@ name: Update AI Tools Dataset
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # runs daily at 03:00 UTC
+    - cron: '0 3 * * *'   # daily at 03:00 UTC
   workflow_dispatch:       # allows manual trigger
 
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          persist-credentials: true   # ensures push works
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.x"
+          python-version: '3.x'
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install requests beautifulsoup4
 
       - name: Run scraper
-        run: |
-          python scraper.py
+        run: python scraper.py
 
       - name: Commit and push changes
         run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Actions"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add ai_tools.json
-          git commit -m "Auto-update AI tools dataset" || echo "No changes to commit"
+          # Commit only if there are changes
+          git diff-index --quiet HEAD || git commit -m "Update dataset"
           git push
