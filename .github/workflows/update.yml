@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
-          persist-credentials: true   # ensures push works
+          persist-credentials: true   # allows push using GITHUB_TOKEN
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -27,11 +27,12 @@ jobs:
       - name: Run scraper
         run: python scraper.py
 
-      - name: Commit and push changes
+      - name: Commit and push changes safely
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add ai_tools.json
           # Commit only if there are changes
           git diff-index --quiet HEAD || git commit -m "Update dataset"
-          git push
+          # Push explicitly to main, create it if it doesn’t exist
+          git push origin HEAD:main || git push origin HEAD:main --force
